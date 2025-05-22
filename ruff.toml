@@ -1,0 +1,57 @@
+line-length = 88
+fix = true
+
+[lint]
+select = [
+    "A", # flake8-builtins
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "ASYNC", # flake8-async
+    "B", # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "E", # pycodestyle Error
+    "EM", # flake8-errmsg,
+    "F", # Pyflakes
+    "FBT", # flake8-boolean-trap
+    "FURB", # refurb
+    "G", # flake8-logging-format
+    "I", # isort
+    "ICN", # flake8-import-conventions
+    "ISC", # flake8-implicit-str-concat
+    "LOG", # flake8-logging
+    "N", # pep8-naming
+    "PERF", # Perflint
+    "PIE", # flake8-pie
+    "PLC", # Pylint Convention
+    "PLE", # Pylint Error
+    "PLR", # Pylint Refactor
+    "PLW", # Pylint Warning
+    "PT", # flake8-pytest-style
+    "PTH", # flake8-use-pathlib
+    "RET", # flake8-return
+    "RSE", # flake8-raise
+    "RUF", # Ruff-specific rules
+    "S", # flake8-bandit
+    "SIM", # flake8-simplify
+    "SLF", # flake8-self
+    "SLOT", # flake8-slots
+    "TC", # flake8-type-checking
+    "TRY", # tryceratops
+    "UP", # pyupgrade
+    "W", # pycodestyle Warning
+]
+ignore = [
+    "W191", # tab-indentation
+    "E111", # indentation-with-invalid-multiple
+    "E114", # indentation-with-invalid-multiple-comment
+    "E117", # over-indented
+    "D206", # docstring-tab-indentation
+    "D300", # triple-single-quotes
+    "ISC002", # multi-line-implicit-string-concatenation
+]
+
+[format]
+line-ending = "lf"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
