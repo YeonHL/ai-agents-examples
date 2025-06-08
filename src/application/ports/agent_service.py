@@ -45,11 +45,11 @@ class AgentService(ABC):
 
     @abstractmethod
     async def chat(self, message: list[dict[str, str]], thread_id: str) -> dict:
-        """에이전트를 호출하여 메시지를 처리합니다.
+        """에이전트와 대화를 수행합니다.
 
         Args:
-            message: 사용자 메시지 리스트
-            thread_id: 대화 스레드 ID
+            message: 사용자 메시지 목록
+            thread_id: 대화 스레드 식별자
 
         Returns:
             dict: 에이전트의 응답
@@ -57,12 +57,12 @@ class AgentService(ABC):
 
     @abstractmethod
     async def chat_stream(self, message: list, thread_id: str) -> AsyncGenerator:
-        """에이전트의 응답을 스트리밍합니다.
+        """에이전트와 스트리밍 방식으로 대화를 수행합니다.
 
         Args:
-            message: 사용자 메시지 리스트
-            thread_id: 대화 스레드 ID
+            message: 사용자 메시지 목록
+            thread_id: 대화 스레드 식별자
 
         Yields:
-            dict: 에이전트의 응답 조각
+            AsyncGenerator: 에이전트의 응답 스트림
         """
