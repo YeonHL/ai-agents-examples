@@ -8,7 +8,7 @@ from langchain_core.runnables import RunnableConfig
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 
-from src.domain.models import Agent
+from src.application.ports import AgentService
 
 if TYPE_CHECKING:
     from langchain_core.messages import AnyMessage
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from pydantic import SecretStr
 
 
-class LangGraphAgent:
+class LangGraphAgent(AgentService):
     """LangGraph 기반의 에이전트 구현체입니다.
 
     이 클래스는 LangGraph를 사용하여 ReAct 패턴을 구현한 에이전트를 제공합니다.
@@ -36,6 +36,7 @@ class LangGraphAgent:
         model_provider: str = "",
         api_key: Union["SecretStr", str] = "",
         sampling_parameters: dict | None = None,
+        stream_mode: list[str] | str = "messages",
         tools: list | None = None,
         response_format: Optional["StructuredResponseSchema"] = None,
         pre_model_hook: Optional["RunnableLike"] = None,
@@ -57,18 +58,14 @@ class LangGraphAgent:
                 - False: 부모 그래프에 체크포인터가 있어도 체크포인팅 비활성화
                 - None: 부모 그래프로부터 체크포인터 상속 (기본값: None)
         """
-        if not sampling_parameters:
-            sampling_parameters = {}
-
-        self.metadata = Agent(
-            model_info={
-                "name": model_name,
-                "provider": model_provider,
-                "api_key": api_key,
-            },  # type: ignore (자동 변환)
-            sampling_parameters=sampling_parameters,  # type: ignore (자동 변환)
+        super().__init__(
             name=name,
+            model_name=model_name,
+            model_provider=model_provider,
+            api_key=api_key,
+            sampling_parameters=sampling_parameters,
         )
+
         _sampling_parameters: dict = self.metadata.sampling_parameters.model_dump(
             exclude_none=True
         )
@@ -78,6 +75,7 @@ class LangGraphAgent:
             api_key=self.metadata.model_info.api_key,
             **_sampling_parameters,
         )
+        self._stream_mode = stream_mode
         self._tools: list = tools if tools is not None else []
         self._response_format = response_format
         self._pre_model_hook = pre_model_hook
@@ -110,21 +108,18 @@ class LangGraphAgent:
             생성된 메시지 리스트
         """
 
-    async def invoke(self, message: list[dict[str, str]], thread_id: str) -> dict:
-        """메시지 전체 응답을 가져옵니다."""
+    async def chat(self, message: list[dict[str, str]], thread_id: str) -> dict:
+        """에이전트를 호출하여 메시지를 처리합니다."""
         config = RunnableConfig(configurable={"thread_id": thread_id})
-        final_state = await self._graph.ainvoke({"messages": message}, config=config)
-        return final_state
+        return await self._graph.ainvoke({"messages": message}, config=config)
 
-    async def stream(
-        self, message: list, thread_id: str, stream_mode: list[str] | str = "messages"
-    ) -> AsyncGenerator:
+    async def chat_stream(self, message: list, thread_id: str) -> AsyncGenerator:
         """메시지를 스트리밍 방식으로 처리합니다."""
         config = RunnableConfig(configurable={"thread_id": thread_id})
         async for chunk in self._graph.astream(
             message,
             config=config,  # type: ignore (자동 변환)
-            stream_mode=stream_mode,  # type: ignore (자동 변환)
+            stream_mode=self._stream_mode,  # type: ignore (자동 변환)
         ):
             yield chunk
 
