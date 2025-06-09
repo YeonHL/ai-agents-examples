@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "a2a-sdk>=0.2.4",
     "agentevals>=0.0.7",
+    "dependency-injector>=4.47.1",
     "duckduckgo-search>=8.0.2",
     "fastapi[standard]>=0.115.12",
     "langchain-community>=0.3.24",
